@@ -1,5 +1,4 @@
 // middleware/errorHandler.js
-import { ObjectId } from 'mongodb';
 
 export class AppError extends Error {
     constructor(message, statusCode, errorCode = null) {
@@ -45,10 +44,6 @@ const handleMongoError = (err) => {
         const field = Object.keys(err.keyValue)[0];
         const value = err.keyValue[field];
         return new ConflictError(`Ya existe un registro con ${field}: ${value}`);
-    }
-
-    if (err.name === 'CastError' && err.kind === 'ObjectId') {
-        return new ValidationError('ID inválido proporcionado');
     }
 
     if (err.name === 'ValidationError') {
@@ -111,9 +106,6 @@ export const errorHandler = (err, req, res, next) => {
         error = handleMongoError(err);
     }
 
-    if (err.message?.includes('Invalid ObjectId')) {
-        error = new ValidationError('ID de recurso inválido');
-    }
 
     if (err.name === 'MongoNetworkError' || err.name === 'MongoServerError') {
         error = new DatabaseError('Error de conexión con la base de datos');
@@ -139,12 +131,7 @@ export const asyncHandler = (fn) => {
     };
 };
 
-// Función helper para validar ObjectId
-export const validateObjectId = (id, fieldName = 'ID') => {
-    if (!ObjectId.isValid(id)) {
-        throw new ValidationError(`${fieldName} inválido`);
-    }
-};
+
 
 // Función helper para crear errores de validación
 export const createValidationError = (message, errors = []) => {
@@ -170,7 +157,6 @@ export default {
     NotFoundError,
     ConflictError,
     DatabaseError,
-    validateObjectId,
     createValidationError,
     createNotFoundError,
     createConflictError

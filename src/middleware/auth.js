@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import { ObjectId } from "mongodb";
 
 if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET no está configurado en las variables de entorno');
@@ -41,7 +40,6 @@ const autenticar = async (req, res, next) => {
             console.log('decoded.id:', decoded.id);
             console.log('Tipo de decoded.id:', typeof decoded.id);
             console.log('decoded tiene _id?:', decoded._id);
-            console.log('ObjectId.isValid(decoded.id):', ObjectId.isValid(decoded.id));
         }
         
         req.usuario = {
