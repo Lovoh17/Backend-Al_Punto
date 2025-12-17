@@ -1,7 +1,7 @@
 import cors from 'cors';
 
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL || 'https://comfy-pie-1b854e.netlify.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
