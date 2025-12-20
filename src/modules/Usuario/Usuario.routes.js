@@ -2,70 +2,29 @@ import express from 'express';
 const router = express.Router();
 import UsuarioController from './Usuario.controller.js';
 
-// Ruta temporal para debug de login - ELIMINAR después
-router.post('/login-debug', async (req, res) => {
-  console.log('=== LOGIN DEBUG ===');
+// ⬇️⬇️⬇️ MIDDLEWARE ESPECÍFICO PARA LOGIN ⬇️⬇️⬇️
+const loginDebug = (req, res, next) => {
+  console.log('🔍 [ROUTES MIDDLEWARE] Interceptando /login');
+  console.log('  Method:', req.method);
+  console.log('  Path:', req.path);
+  console.log('  Content-Type:', req.headers['content-type']);
+  console.log('  req.body exists?', req.body !== undefined);
+  console.log('  req.body:', req.body);
   
-  try {
-    const { email, password } = req.body;
-    console.log('Email:', email);
-    
-    // 1. Conectar a DB directamente
-    const pool = await connectDB();
-    
-    // 2. Verificar si la tabla existe
-    const tableCheck = await pool.query(`
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_name = 'usuarios'
-      );
-    `);
-    
-    console.log('Tabla usuarios existe?', tableCheck.rows[0].exists);
-    
-    if (!tableCheck.rows[0].exists) {
-      return res.json({ error: 'Tabla usuarios no existe' });
-    }
-    
-    // 3. Buscar usuario
-    const userResult = await pool.query(
-      'SELECT id, email, password, nombre FROM usuarios WHERE email = $1',
-      [email]
-    );
-    
-    console.log('Usuarios encontrados:', userResult.rows.length);
-    
-    if (userResult.rows.length === 0) {
-      return res.status(401).json({ error: 'Usuario no encontrado' });
-    }
-    
-    const user = userResult.rows[0];
-    console.log('Usuario:', { id: user.id, email: user.email });
-    
-    // 4. Verificar contraseña (SIMPLIFICADO - solo para prueba)
-    // EN PRODUCCIÓN usa bcrypt.compare()
-    if (password !== user.password) {
-      return res.status(401).json({ error: 'Contraseña incorrecta' });
-    }
-    
-    // 5. Responder
-    res.json({
-      success: true,
-      message: 'Login debug exitoso',
-      user: { id: user.id, email: user.email, nombre: user.nombre }
-    });
-    
-  } catch (error) {
-    console.error('ERROR en login-debug:', error.message);
-    res.status(500).json({ 
-      error: error.message,
-      stack: error.stack 
-    });
+  // Si no hay body pero debería haberlo
+  if (!req.body && req.method === 'POST') {
+    console.log('⚠️  Creando req.body vacío para evitar error');
+    req.body = {};
   }
-});
+  
+  next();
+};
+
+// Usa el middleware SOLO para login
+router.post('/login', loginDebug, UsuarioController.login);
 
 router.post('/registro', UsuarioController.registrar);
-router.post('/login', UsuarioController.login);
+//router.post('/login', UsuarioController.login);
 
 router.get('/estadisticas', UsuarioController.obtenerEstadisticas);
 router.get('/reportes/registros', UsuarioController.obtenerReporteRegistros);

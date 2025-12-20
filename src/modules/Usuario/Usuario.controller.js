@@ -30,6 +30,21 @@ class UsuarioController {
   }
 
   static async login(req, res) {
+  // ⬇️⬇️⬇️ AÑADE ESTO AL PRINCIPIO ⬇️⬇️⬇️
+  console.log('🔍 [CONTROLLER] Login llamado');
+  console.log('📦 req.body:', req.body);
+  console.log('📦 req.body === undefined?', req.body === undefined);
+  console.log('📦 req.headers:', req.headers['content-type']);
+  
+  // ⬇️⬇️⬇️ MANEJO DE SEGURIDAD SI req.body ES undefined ⬇️⬇️⬇️
+  if (!req.body) {
+    console.error('❌ ERROR CRÍTICO: req.body es undefined en controller!');
+    return res.status(400).json({
+      success: false,
+      error: 'Cuerpo de la petición no recibido'
+    });
+  }
+
     try {
       const { email, password } = req.body;
 
