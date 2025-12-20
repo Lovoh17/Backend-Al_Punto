@@ -17,6 +17,25 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use("/uploads", express.static("uploads"));
 
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// ⬇️⬇️⬇️ AÑADE ESTO (middleware de diagnóstico) ⬇️⬇️⬇️
+app.use((req, res, next) => {
+  // Solo para rutas de login
+  if (req.method === 'POST' && req.path === '/api/usuarios/login') {
+    console.log('🔍 [DIAGNÓSTICO] Petición POST /login recibida');
+    console.log('  Headers:', {
+      'content-type': req.headers['content-type'],
+      'content-length': req.headers['content-length']
+    });
+    console.log('  req.body disponible?', req.body !== undefined);
+    console.log('  req.body:', req.body);
+    console.log('  req.rawBody?', req.rawBody); // Por si acaso
+  }
+  next();
+});
+
 // Logging en desarrollo
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
