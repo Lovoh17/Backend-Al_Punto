@@ -4,7 +4,7 @@ class PedidoModel {
   // Crear un nuevo pedido
   static async crear(datos) {
     const pool = getDB();
-    const { usuario_id, numero_pedido=null, numero_mesa, ubicacion, total = 0, estado = 'pendiente', notas } = datos;
+    const { usuario_id, numero_pedido, numero_mesa, ubicacion, total = 0, estado = 'pendiente', notas } = datos;
     
     const query = `
       INSERT INTO pedidos (usuario_id, numero_pedido, numero_mesa, ubicacion, total, estado, notas)
