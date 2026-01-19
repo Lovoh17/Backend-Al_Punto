@@ -223,14 +223,6 @@ class PedidoModel {
     return result.rows[0];
   }
 
-  // Generar número de pedido único
-  static async generarNumeroPedido() {
-    const pool = getDB();
-    const query = `SELECT generar_numero_pedido() as numero`;
-    const result = await pool.query(query);
-    return result.rows[0].numero;
-  }
-
   // Obtener pedidos activos (no entregados ni cancelados)
   static async obtenerActivos() {
     const pool = getDB();
