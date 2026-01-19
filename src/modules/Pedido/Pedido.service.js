@@ -10,11 +10,6 @@ class PedidoService {
         throw new Error('Usuario ID es requerido');
       }
 
-      // Generar número de pedido si no viene
-      if (!datos.numero_pedido) {
-        datos.numero_pedido = await PedidoModel.generarNumeroPedido();
-      }
-
       const nuevoPedido = await PedidoModel.crear(datos);
 
       // Si vienen productos, agregarlos
